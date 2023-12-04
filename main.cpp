@@ -61,6 +61,86 @@ void addVariables(FuzzyLogicSystem &system) {
 
 }
 
+void addVariableSets(FuzzyLogicSystem &system) {
+    cout << "Enter the variable's name:\n------------------------" << endl;
+    string varName;
+    cin >> varName;
+    bool check = false;
+    FuzzyVariable* variable;
+    /// to check if variable exists in the system or not
+    variable = system.findVariable(varName);
+    if(variable == nullptr){
+        cout << "ERROR: no variable with this name is available in the system\n";
+        return;
+    }
+//    for (int i = 0; i < system.variables.size(); ++i) {
+//        if (varName == system.variables[i].name) {
+//            check = true;
+//            variable = system.variables[i];
+//            break;
+//        }
+//    }
+//    if (!check) {
+//        cout << "ERROR: no variable with this name is available in the system\n";
+//        return;
+//    }
+    cout << "Enter the fuzzy set name, type (TRI/TRAP) and values: (Press x to finish) \n";
+    cout << "-----------------------------------------------------\n";
+    string setName = "check", type;
+    int point1, point2, point3, point4;
+    while (setName != "x") {
+        cin >> setName;
+        if (setName == "x")
+            break;
+        cin >> type >> point1 >> point2 >> point3;
+        FuzzySetType tempType;
+        if (type == "TRAP") {
+            tempType = TRAP;
+            cin >> point4;
+        } else {
+            tempType = TRI;
+            point4 = 0;
+        }
+
+        if (!(point1 <= point2 <= point3)) {
+            cout << "ERROR in the points you entered ,please enter ascending points\n";
+            return;
+        }
+        FuzzySet newSet(setName, tempType, point1, point2, point3, point4);
+        variable->sets.push_back(newSet);
+        system.updateVariable(*variable);
+
+    }
+}
+
+void addRules(FuzzyLogicSystem &system){
+    cout << "Enter the rules in this format: (Press x to finish)\n";
+    cout << "IN_variable set operator IN_variable set => OUT_variable set\n";
+    cout << "------------------------------------------------------------\n";
+    string inVar1="check" , inVar2 ,outVar, inSet1,inSet2 , outSet , _operator;
+    while (inVar1 != "x"){
+        cin >> inVar1;
+        if (inVar1 == "x")
+            break;
+
+    }
+}
+
+void printSystemVariables(FuzzyLogicSystem &system) {
+    for (int i = 0; i < system.variables.size(); ++i) {
+        cout << system.variables[i].name << " : " << endl;
+        for (int j = 0; j < system.variables[i].sets.size(); ++j) {
+            cout << system.variables[i].sets[j].name << " " << system.variables[i].sets[j].type << " ";
+            for (int k = 0; k < system.variables[i].sets[j].points.size(); ++k) {
+                cout << system.variables[i].sets[j].points[k].first << " ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+    }
+}
+
+
 void mainMenu(FuzzyLogicSystem &system) {
 
     int choice = 1;
@@ -73,7 +153,8 @@ void mainMenu(FuzzyLogicSystem &system) {
                 break;
             }
             case 2: {
-
+                addVariableSets(system);
+                printSystemVariables(system);
                 break;
             }
             case 3: {
