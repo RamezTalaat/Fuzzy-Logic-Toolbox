@@ -66,10 +66,10 @@ void addVariableSets(FuzzyLogicSystem &system) {
     string varName;
     cin >> varName;
     bool check = false;
-    FuzzyVariable* variable;
+    FuzzyVariable *variable;
     /// to check if variable exists in the system or not
     variable = system.findVariable(varName);
-    if(variable == nullptr){
+    if (variable == nullptr) {
         cout << "ERROR: no variable with this name is available in the system\n";
         return;
     }
@@ -113,16 +113,84 @@ void addVariableSets(FuzzyLogicSystem &system) {
     }
 }
 
-void addRules(FuzzyLogicSystem &system){
+void addRules(FuzzyLogicSystem &system) {
     cout << "Enter the rules in this format: (Press x to finish)\n";
     cout << "IN_variable set operator IN_variable set => OUT_variable set\n";
     cout << "------------------------------------------------------------\n";
-    string inVar1="check" , inVar2 ,outVar, inSet1,inSet2 , outSet , _operator;
-    while (inVar1 != "x"){
+    string inVar1 = "check", inVar2, outVar, inSet1, inSet2, outSet, _operator;
+    while (inVar1 != "x") {
+        FuzzyVariable *inVar1Check, *inVar2Check, *outVarCheck;
+        FuzzySet *inSet1Check, *inSet2Check, *outSetCheck;
+        char dummy;
         cin >> inVar1;
+        //cout << inVar1 << " "<< inSet1 << " " << _operator <<" " << inVar2 << " "<< inSet2 << " " <<outVar << " "<< outSet << endl;
         if (inVar1 == "x")
             break;
+        cin >> inSet1 >> _operator >> inVar2 >> inSet2 >> dummy >> dummy >> outVar >> outSet;
+        inVar1Check = system.findVariable(inVar1);
+        inVar2Check = system.findVariable(inVar2);
+        outVarCheck = system.findVariable(outVar);
 
+        ///input checks
+        if (inVar1Check == nullptr || inVar2Check == nullptr || outVarCheck == nullptr) {
+            cout << "ERROR: you entered an unregistered variable.\n";
+            continue;
+        }
+        if (_operator != "and" && _operator != "or" && _operator != "or_not" && _operator != "and_not") {
+            cout << "ERROR: you entered an unregistered operator.\n";
+            cout << "Supported operators are : and, and_not, or, or_not \n";
+            continue;
+        }
+        inSet1Check = inVar1Check->findSet(inSet1);
+        inSet2Check = inVar2Check->findSet(inSet2);
+        outSetCheck = outVarCheck->findSet(outSet);
+        if (inSet1Check == nullptr || inSet2Check == nullptr || outSetCheck == nullptr) {
+            cout << "ERROR: you entered an unregistered set.\n";
+            continue;
+        }
+        FuzzyRule newRule;
+        newRule.inVar1 = inVar1;
+        newRule.inVar2 = inVar2;
+        newRule.outVar = outVar;
+        newRule.inSet1 = inSet1;
+        newRule.inSet2 = inSet2;
+        newRule.outSet = outSet;
+        if (_operator == "and")
+            newRule._operator = _and;
+        else if (_operator == "and_not")
+            newRule._operator = _and_not;
+        else if (_operator == "or")
+            newRule._operator = _or;
+        else if (_operator == "or_not")
+            newRule._operator = _or_not;
+        system.rules.push_back(newRule);
+        cout << "RULE ADDED: \n" << newRule.inVar1 << " " << newRule.inSet1 << " " << newRule._operator;
+        cout << " " << newRule.inVar2 << " " << newRule.inSet2 << " => " << newRule.outVar << " " << newRule.outSet
+             << endl;
+
+    }
+}
+
+void runSimulation(FuzzyLogicSystem &system) {
+    cout << "Enter the crisp values:\n-----------------------\n";
+    if (system.variables.empty()) {
+        cout << "CAN NOT RUN SIMULATION , NO VARIABLES IN SYSTEM\n";
+        return;
+    }
+    vector<pair<FuzzyVariable, int>> inputValues; // to store crisp values
+    for (int i = 0; i < system.variables.size(); ++i) {
+        int xValue;
+        if (system.variables[i].type == IN) {
+            cout << system.variables[i].name << ": ";
+            cin >> xValue;
+            inputValues.emplace_back(system.variables[i], xValue);
+        }
+    }
+    cout << "Running the simulation...\n";
+    vector<pair<FuzzyVariable , vector<pair<string, double>>>> membershipValues;
+    for (int i = 0; i < inputValues.size(); ++i) {
+        vector<pair<string, double>> membershipVec = inputValues[i].first.getMembership(inputValues[i].second);
+        membershipValues.emplace_back(inputValues[i].first,membershipVec);
     }
 }
 
@@ -158,11 +226,11 @@ void mainMenu(FuzzyLogicSystem &system) {
                 break;
             }
             case 3: {
-
+                addRules(system);
                 break;
             }
             case 4: {
-
+                runSimulation(system);
                 break;
             }
             case 5: {
