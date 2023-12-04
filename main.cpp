@@ -104,7 +104,7 @@ int main() {
     while (choice != 2) {
         cout << "Fuzzy Logic Toolbox\n===================" << endl;
         cout << "1-Create a new fuzzy system" << endl;
-        cout << "2- Quit" << endl;
+        cout << "2-Quit" << endl;
 
         cin >> choice;
         if (choice != 1 && choice != 2) {
@@ -115,8 +115,6 @@ int main() {
             systemDataInput(*system);
             mainMenu(*system);
         }
-
-
     }
 
     return 0;
