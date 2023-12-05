@@ -187,11 +187,65 @@ void runSimulation(FuzzyLogicSystem &system) {
         }
     }
     cout << "Running the simulation...\n";
-    vector<pair<FuzzyVariable , vector<pair<string, double>>>> membershipValues;
+    vector<pair<FuzzyVariable, vector<pair<string, double>>>> membershipValues;
     for (int i = 0; i < inputValues.size(); ++i) {
         vector<pair<string, double>> membershipVec = inputValues[i].first.getMembership(inputValues[i].second);
-        membershipValues.emplace_back(inputValues[i].first,membershipVec);
+        membershipValues.emplace_back(inputValues[i].first, membershipVec);
     }
+    cout << "Fuzzification => done " << endl;
+    vector<pair<string, pair<string, double>>> resultMembership;
+    for (int i = 0; i < system.rules.size(); ++i) {
+        double value1 = 0, value2 = 0;
+        for (int j = 0; j < membershipValues.size(); ++j) {
+            if (membershipValues[j].first.name == system.rules[i].inVar1) {
+                for (int k = 0; k < membershipValues[j].second.size(); ++k) {
+                    if (membershipValues[j].second[k].first == system.rules[i].inSet1) {
+                        value1 = membershipValues[j].second[k].second;
+                    }
+                }
+            }
+            if (membershipValues[j].first.name == system.rules[i].inVar2) {
+                for (int k = 0; k < membershipValues[j].second.size(); ++k) {
+                    if (membershipValues[j].second[k].first == system.rules[i].inSet2) {
+                        value2 = membershipValues[j].second[k].second;
+                    }
+                }
+            }
+        }
+        double result = 0;
+        if (system.rules[i]._operator == _and) {
+            result = min(value1, value2);
+        } else if (system.rules[i]._operator == _and_not) {
+            result = min(value1, 1 - value2);
+        } else if (system.rules[i]._operator == _or) {
+            result = max(value1, value2);
+        } else if (system.rules[i]._operator == _or_not) {
+            result = max(value1, 1 - value2);
+        }
+        pair<string, double> tempResultPair;
+        tempResultPair.first = system.rules[i].outSet;
+        tempResultPair.second = result;
+        resultMembership.emplace_back(system.rules[i].outVar, tempResultPair);
+    }
+    ///if there were multiple values for the same set partition
+    for (int i = 0; i < resultMembership.size(); ++i) {
+        for (int j = 0; j < resultMembership.size(); ++j) {
+
+            if (i != j && resultMembership[i].second.first == resultMembership[j].second.first) {
+                double filteredResult = max(resultMembership[i].second.second, resultMembership[j].second.second);
+                if (filteredResult == resultMembership[i].second.second) {
+                    resultMembership.erase(resultMembership.begin() + j);
+                } else {
+                    resultMembership.erase(resultMembership.begin() + i);
+                }
+            }
+        }
+    }
+    for (int i = 0; i < resultMembership.size(); ++i) {
+        cout << "Variable = " << resultMembership[i].first << " " << " , set = " << resultMembership[i].second.first
+             << " , membership = " << resultMembership[i].second.second << endl;
+    }
+    cout << "Inference => done " << endl;
 }
 
 void printSystemVariables(FuzzyLogicSystem &system) {
