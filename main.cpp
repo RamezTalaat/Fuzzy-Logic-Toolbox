@@ -246,6 +246,25 @@ void runSimulation(FuzzyLogicSystem &system) {
              << " , membership = " << resultMembership[i].second.second << endl;
     }
     cout << "Inference => done " << endl;
+    double crispDenominator = 0, crispNumerator = 0;
+    for (int i = 0; i < resultMembership.size(); ++i) {
+        FuzzyVariable *outVar = system.findVariable(resultMembership[i].first);
+        for (int j = 0; j < outVar->sets.size(); ++j) {
+            double weightedAVG = 0;
+            if (outVar->sets[j].name == resultMembership[i].second.first) {
+                for (int k = 0; k < outVar->sets[j].points.size(); ++k) {
+                    weightedAVG += outVar->sets[j].points[k].first;  //to sum all x points in graph
+                }
+                weightedAVG /= outVar->sets[j].points.size();
+                cout << outVar->sets[j].name << " -> " << weightedAVG << endl;
+                crispDenominator += resultMembership[i].second.second;
+                crispNumerator += weightedAVG * resultMembership[i].second.second;
+            }
+        }
+    }
+    cout << "Defuzzification => done" << endl;
+    cout << "CRISP = " << crispNumerator / crispDenominator << endl;
+
 }
 
 void printSystemVariables(FuzzyLogicSystem &system) {
