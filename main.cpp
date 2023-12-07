@@ -23,7 +23,9 @@ void printMenu() {
     cout << "2- Add fuzzy sets to an existing variable." << endl;
     cout << "3- Add rules." << endl;
     cout << "4- Run the simulation on crisp values." << endl;
-    cout << "5- Exit." << endl;
+    cout << "5- print system Variables and their Sets." << endl;
+    cout << "6- print system Rules" << endl;
+    cout << "7- Exit." << endl;
 }
 
 void addVariables(FuzzyLogicSystem &system) {
@@ -73,17 +75,6 @@ void addVariableSets(FuzzyLogicSystem &system) {
         cout << "ERROR: no variable with this name is available in the system\n";
         return;
     }
-//    for (int i = 0; i < system.variables.size(); ++i) {
-//        if (varName == system.variables[i].name) {
-//            check = true;
-//            variable = system.variables[i];
-//            break;
-//        }
-//    }
-//    if (!check) {
-//        cout << "ERROR: no variable with this name is available in the system\n";
-//        return;
-//    }
     cout << "Enter the fuzzy set name, type (TRI/TRAP) and values: (Press x to finish) \n";
     cout << "-----------------------------------------------------\n";
     string setName = "check", type;
@@ -110,6 +101,17 @@ void addVariableSets(FuzzyLogicSystem &system) {
         variable->sets.push_back(newSet);
         system.updateVariable(*variable);
 
+    }
+}
+
+void printSystemRules(FuzzyLogicSystem &system) {
+    for (int i = 0; i < system.rules.size(); ++i) {
+        system.rules[i];
+        cout << "RULE " << i + 1 << ": " << system.rules[i].inVar1 << " " << system.rules[i].inSet1 << " "
+             << system.rules[i]._operator;
+        cout << " " << system.rules[i].inVar2 << " " << system.rules[i].inSet2 << " => " << system.rules[i].outVar
+             << " " << system.rules[i].outSet
+             << endl;
     }
 }
 
@@ -164,14 +166,18 @@ void addRules(FuzzyLogicSystem &system) {
         else if (_operator == "or_not")
             newRule._operator = _or_not;
         system.rules.push_back(newRule);
-        cout << "RULE ADDED: \n" << newRule.inVar1 << " " << newRule.inSet1 << " " << newRule._operator;
-        cout << " " << newRule.inVar2 << " " << newRule.inSet2 << " => " << newRule.outVar << " " << newRule.outSet
-             << endl;
+//        cout << "RULE ADDED: \n" << newRule.inVar1 << " " << newRule.inSet1 << " " << newRule._operator;
+//        cout << " " << newRule.inVar2 << " " << newRule.inSet2 << " => " << newRule.outVar << " " << newRule.outSet
+//             << endl;
 
     }
 }
 
 void runSimulation(FuzzyLogicSystem &system) {
+    if (system.variables.empty() || system.rules.empty()) {
+        cout << "CAN'T START THE SIMULATION! Please add the fuzzy sets and rules first.\n";
+        return;
+    }
     cout << "Enter the crisp values:\n-----------------------\n";
     if (system.variables.empty()) {
         cout << "CAN NOT RUN SIMULATION , NO VARIABLES IN SYSTEM\n";
@@ -241,10 +247,10 @@ void runSimulation(FuzzyLogicSystem &system) {
             }
         }
     }
-    for (int i = 0; i < resultMembership.size(); ++i) {
-        cout << "Variable = " << resultMembership[i].first << " " << " , set = " << resultMembership[i].second.first
-             << " , membership = " << resultMembership[i].second.second << endl;
-    }
+//    for (int i = 0; i < resultMembership.size(); ++i) {
+//        cout << "Variable = " << resultMembership[i].first << " " << " , set = " << resultMembership[i].second.first
+//             << " , membership = " << resultMembership[i].second.second << endl;
+//    }
     cout << "Inference => done " << endl;
     double crispDenominator = 0, crispNumerator = 0;
     for (int i = 0; i < resultMembership.size(); ++i) {
@@ -256,7 +262,7 @@ void runSimulation(FuzzyLogicSystem &system) {
                     weightedAVG += outVar->sets[j].points[k].first;  //to sum all x points in graph
                 }
                 weightedAVG /= outVar->sets[j].points.size();
-                cout << outVar->sets[j].name << " -> " << weightedAVG << endl;
+                //cout << outVar->sets[j].name << " -> " << weightedAVG << endl;
                 crispDenominator += resultMembership[i].second.second;
                 crispNumerator += weightedAVG * resultMembership[i].second.second;
             }
@@ -285,7 +291,7 @@ void printSystemVariables(FuzzyLogicSystem &system) {
 void mainMenu(FuzzyLogicSystem &system) {
 
     int choice = 1;
-    while (choice != 5) {
+    while (choice != 7) {
         printMenu();
         cin >> choice;
         switch (choice) {
@@ -295,7 +301,6 @@ void mainMenu(FuzzyLogicSystem &system) {
             }
             case 2: {
                 addVariableSets(system);
-                printSystemVariables(system);
                 break;
             }
             case 3: {
@@ -307,6 +312,22 @@ void mainMenu(FuzzyLogicSystem &system) {
                 break;
             }
             case 5: {
+                if (system.variables.empty()) {
+                    cout << "NO VARIABLES YET" << endl;
+                } else {
+                    printSystemVariables(system);
+                }
+                break;
+            }
+            case 6: {
+                if (system.rules.empty()) {
+                    cout << "NO RULES YET" << endl;
+                } else {
+                    printSystemRules(system);
+                }
+                break;
+            }
+            case 7: {
                 cout << "Thank you for using our system :)" << endl;
                 break;
             }
