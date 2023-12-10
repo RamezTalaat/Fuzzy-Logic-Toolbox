@@ -37,15 +37,15 @@ public:
         return temp;
     }
 
-    vector<pair<string, double>> getMembership(int value) {
+    vector<pair<string, double>> getMembership(double value) {
         vector<pair<string, double>> membership;
         for (int i = 0; i < sets.size(); ++i) {
             for (int j = 0; j < sets[i].points.size() - 1; ++j) {
                 if (sets[i].points[j].first != sets[i].points[j + 1].first && value >= sets[i].points[j].first &&
                     value <= sets[i].points[j + 1].first) {
-                    //cout << "CHOSEN points = " << sets[i].points[j].first << ", " << sets[i].points[j].second
-                    //     << " and ";
-                    //cout << sets[i].points[j + 1].first << ", " << sets[i].points[j + 1].second << endl;
+//                    cout << "CHOSEN points = " << sets[i].points[j].first << ", " << sets[i].points[j].second
+//                         << " and ";
+//                    cout << sets[i].points[j + 1].first << ", " << sets[i].points[j + 1].second << endl;
                     pair<int, int> point1 = sets[i].points[j], point2 = sets[i].points[j + 1];
                     double slope = (point2.second - point1.second) /
                                    (double) (point2.first - point1.first);  ///a = y2-y1/x2-x1

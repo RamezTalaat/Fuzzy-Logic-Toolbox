@@ -111,9 +111,11 @@ void printSystemMultiRules(FuzzyLogicSystem &system) {
             cout << "var = " << system.rules[i].variables[j].first << " , set = "
                  << system.rules[i].variables[j].second << " --- ";
         }
+        cout << endl;
         for (int j = 0; j < system.rules[i].operators.size(); ++j) {
             cout << "operator = " << system.rules[i].operators[j] << " ---- ";
         }
+        cout << endl;
     }
 };
 
@@ -244,11 +246,11 @@ void newAddRules(FuzzyLogicSystem &system) {
         FuzzyRule newRule;
 
         for (auto iter: variables) {
-            cout << iter.first << " set-> " << iter.second << endl;
+            //cout << iter.first << " set-> " << iter.second << endl;
             newRule.variables.push_back(iter);
         }
         for (auto iter: operators) {
-            cout << iter << endl;
+            //cout << iter << endl;
             newRule.operators.push_back(iter);
         }
         system.rules.push_back(newRule);
@@ -443,15 +445,15 @@ void runMultiVarSimulation(FuzzyLogicSystem &system) {
 
                 for (int l = 0; l < system.rules[i].variables.size() - 1; ++l) { //-1 because last var is output var
                     double value = 0;
-                    cout << "rule" << i + 1 << " " << "membership of " << membershipValues[j].first.name << " ";
-                    cout << "value of " << system.rules[i].variables[l].first << " "
-                         << system.rules[i].variables[l].second << endl;
+//                    cout << "rule" << i + 1 << " " << "membership of " << membershipValues[j].first.name << " ";
+//                    cout << "value of " << system.rules[i].variables[l].first << " "
+//                         << system.rules[i].variables[l].second << endl;
                     if (membershipValues[j].first.name == system.rules[i].variables[l].first &&
                         membershipValues[j].second[k].first == system.rules[i].variables[l].second) {
 
                         value = membershipValues[j].second[k].second;
-                        cout << membershipValues[j].first.name << " variable of set "
-                             << membershipValues[j].second[k].first << " = " << value << endl;
+//                        cout << membershipValues[j].first.name << " variable of set "
+//                             << membershipValues[j].second[k].first << " = " << value << endl;
                         values.emplace_back(
                                 make_pair(membershipValues[j].first.name, membershipValues[j].second[k].first), value);
                     }
@@ -461,11 +463,11 @@ void runMultiVarSimulation(FuzzyLogicSystem &system) {
 
             }
         }
-        cout << "VALUES" << endl;
-        for (int j = 0; j < values.size(); ++j) {
-            cout << values[j].second << " ";
-        }
-        cout << endl;
+//        cout << "VALUES" << endl;
+//        for (int j = 0; j < values.size(); ++j) {
+//            cout << values[j].second << " ";
+//        }
+//        cout << endl;
         double result = 0;
         vector<double> ruleValues;
         for (int j = 0; j < system.rules[i].variables.size() - 1; ++j) {
@@ -480,11 +482,11 @@ void runMultiVarSimulation(FuzzyLogicSystem &system) {
             ruleValues.push_back(setVal);
 
         }
-        cout << "RULE values" << endl;
-        for (int j = 0; j < ruleValues.size(); ++j) {
-            cout << ruleValues[j] << " ";
-        }
-        cout << endl;
+//        cout << "RULE values" << endl;
+//        for (int j = 0; j < ruleValues.size(); ++j) {
+//            cout << ruleValues[j] << " ";
+//        }
+//        cout << endl;
         for (int k = 0; k < system.rules[i].operators.size(); ++k) {
             operatorType _op = system.rules[i].operators[k];
             if (_op == _and) {
@@ -520,11 +522,11 @@ void runMultiVarSimulation(FuzzyLogicSystem &system) {
             }
         }
     }
-    ///testing purposes
-    for (int i = 0; i < resultMembership.size(); ++i) {
-        cout << "Variable = " << resultMembership[i].first << " " << " , set = " << resultMembership[i].second.first
-             << " , membership = " << resultMembership[i].second.second << endl;
-    }
+//    ///testing purposes
+//    for (int i = 0; i < resultMembership.size(); ++i) {
+//        cout << "Variable = " << resultMembership[i].first << " " << " , set = " << resultMembership[i].second.first
+//             << " , membership = " << resultMembership[i].second.second << endl;
+//    }
     cout << "Inference => done " << endl;
     double crispDenominator = 0, crispNumerator = 0;
     for (int i = 0; i < resultMembership.size(); ++i) {
@@ -549,20 +551,22 @@ void runMultiVarSimulation(FuzzyLogicSystem &system) {
     vector<pair<string, double>> outputMembershipVec;
     for (int i = 0; i < system.variables.size(); ++i) {
         if (system.variables[i].type == OUT) {
-            outputMembershipVec = system.variables[i].getMembership(finalCrisp);
+            output = system.variables[i];
+            outputMembershipVec = output.getMembership(finalCrisp);
             break;
         }
     }
     double tempMax = -1;
     for (int i = 0; i < outputMembershipVec.size(); ++i) {
-        cout << outputMembershipVec[i].first << " -> "<< outputMembershipVec[i].second << endl;
+        //cout << outputMembershipVec[i].first << " -> " << outputMembershipVec[i].second << endl;
         tempMax = max(tempMax, outputMembershipVec[i].second);
     }
-    cout << "tempMax = " << tempMax << endl;
-    cout << "CRISP = ";
+    //cout << "tempMax = " << tempMax << endl;
+    cout << "The predicted " << output.name << " is ";
     for (int i = 0; i < outputMembershipVec.size(); ++i) {
-        if(tempMax == outputMembershipVec[i].second){
-            cout << outputMembershipVec[i].first << " -> "<< finalCrisp  << " ";
+        //cout << "condition = " << (tempMax == outputMembershipVec[i].second) << endl;
+        if (tempMax == outputMembershipVec[i].second) {
+            cout << outputMembershipVec[i].first << " (" << finalCrisp << ")  ";
         }
     }
     cout << endl;
