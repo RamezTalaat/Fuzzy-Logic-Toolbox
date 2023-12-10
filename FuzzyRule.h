@@ -15,6 +15,10 @@ class FuzzyRule {
 public:
     string inVar1,inVar2,outVar , inSet1,inSet2,outSet;
     operatorType _operator;
+    vector<operatorType> operators;
+    vector<pair<string,string>> variables;
+
+
 };
 
 
